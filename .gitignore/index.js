@@ -20,7 +20,7 @@ bot.on('message', function (message){
 
 
 // Create an event listener for new guild members
-client.on('guildMemberAdd', member => {
+bot.on('guildMemberAdd', member => {
   // Send the message to a designated channel on a server:
   const channel = member.guild.channels.find('name', 'member-log');
   // Do nothing if the channel wasn't found on this server
@@ -32,4 +32,4 @@ client.on('guildMemberAdd', member => {
 
 
 
-bot.login(process.env.TOKEN)
+bot.login('NDU2MjAxNDcxMzA2ODkxMjc0.DgHGUA.FagxlQPHEU9DIhHsQwczFjywz0M')
