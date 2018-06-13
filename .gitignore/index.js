@@ -32,4 +32,4 @@ bot.on('guildMemberAdd', member => {
 
 
 
-bot.login('NDU2MjAxNDcxMzA2ODkxMjc0.DgHGUA.FagxlQPHEU9DIhHsQwczFjywz0M')
+bot.login('TOKEN')
