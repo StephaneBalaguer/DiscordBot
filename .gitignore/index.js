@@ -32,4 +32,4 @@ bot.on('guildMemberAdd', member => {
 
 
 
-bot.login('TOKEN')
+bot.login(process.env.TOKEN)
