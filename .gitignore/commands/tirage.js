@@ -9,6 +9,10 @@ module.exports = class Tirage extends Command{
 	{
 		var msg = message.content
 		var tab = msg.substr(7,10).split('d')
+		
+		if(tab.length > 2)
+		{return false}
+		else{
 		var nblancer = tab[0]
 		var nbface = tab[1]
 		var retour = "Resultat : "
@@ -16,10 +20,8 @@ module.exports = class Tirage extends Command{
 		console.log(tab)
 		console.log(nblancer)
 		console.log(nbface)
-		if(tab.length > 2)
-		{return false}
 		
-		else{
+		
 			if ((nblancer>0 && nblancer<11) && (nbface==6 || nbface==8 || nbface==10 || nbface==12 || nbface==20 || nbface==100))
 			{
 				console.log('OK')
