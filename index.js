@@ -15,10 +15,11 @@ let db = new sqlite3.Database('./db/storedNickDb.db');
 
 bot.on('voiceStateUpdate', (oldMember, newMember) => {
   let newUserChannel = newMember.voiceChannel;
-//  let oldUserChannel = oldMember.voiceChannel;
+  //  let oldUserChannel = oldMember.voiceChannel;
   let userId = newMember.user.id;
   let channelId = newMember.voiceChannelID;
   let ownerID = newMember.guild.ownerID
+  console.log(newMember)
   if (newUserChannel !== undefined && userId != ownerID) {
     // User Joins a voice channel
     let sql = "SELECT nick from T_savedNick WHERE userId = " + userId + " AND channelId= " + channelId + ";"
@@ -34,6 +35,8 @@ bot.on('voiceStateUpdate', (oldMember, newMember) => {
     });
   }
 })
+
+
 
 const prefix = "!";
 
@@ -52,7 +55,7 @@ bot.on("message", message => {
     let userId = retrieveUserIdFromMention(args[0]);
     let channelId = args[1];
     let newNick = args[2];
-    
+
     for (let i = 3; i < args.length; i++) {
       newNick = newNick + " " + args[i];
     }
@@ -68,7 +71,7 @@ bot.on("message", message => {
         throw err;
       }
       if (rows[0].total == 1) {
-          
+
         let updateData = [newNick, userId, channelId];
         let updateSql = "UPDATE T_savedNick SET nick = ?  WHERE userId = ? AND channelId = ?;"
 
@@ -76,9 +79,9 @@ bot.on("message", message => {
           if (err) {
             return console.log(err.message);
           }
-            if(this.changes == 1){
-              message.reply("Le nom de <@"+userId+"> sur le chan <#"+channelId+"> sera maintenant " + unescape(newNick));
-            }
+          if (this.changes == 1) {
+            message.reply("Le nom de <@" + userId + "> sur le chan <#" + channelId + "> sera maintenant " + unescape(newNick));
+          }
 
         });
       }
@@ -89,9 +92,8 @@ bot.on("message", message => {
           if (err) {
             return console.log(err.message);
           }
-          
-          if(this.changes == 1){
-            message.reply("Le nom de <@"+userId+"> sur le chan <#"+channelId+"> sera maintenant " + unescape(newNick));
+          if (this.changes == 1) {
+            message.reply("Le nom de <@" + userId + "> sur le chan <#" + channelId + "> sera maintenant " + unescape(newNick));
           }
         });
       }
@@ -100,10 +102,53 @@ bot.on("message", message => {
   }
   let bbs = message.content.slice(prefix.length).trim().split(' ');
   if (bbs.shift().toLowerCase() == 'sendmessage') {
-    var abc =  message.content.substring(13,message.content.length);
+    var abc = message.content.substring(13, message.content.length);
     message.delete();
     message.channel.send(abc);
   }
+
+  let node = message.content.slice(prefix.length).trim().split(' ');
+  if (node.shift().toLowerCase() == 'list') {
+    var data = '';
+    var selectAll;
+    if (node.length == 1) {
+      data = retrieveUserIdFromMention(args[0]);
+      selectAll = "SELECT * from T_savedNick WHERE userId = '" + data + "' ORDER BY channelId;"
+
+    } else {
+      selectAll = "SELECT * from T_savedNick ORDER BY channelId;"
+    }
+    //selectAll = "SELECT * from T_savedNick WHERE userId = ? GROUP BY channelId;"
+
+    db.all(selectAll, (err, rows) => {
+      var out = "Voici la liste des nicks enregistés :"
+      var count = 0;
+      if (err) {
+        throw err;
+      }
+      let voiceChannelsList = [];
+      message.guild.channels.forEach(function (a, b) {
+        if (a.type == "voice") {
+          voiceChannelsList.push(a.id);
+        }
+      });
+      console.log(rows)
+      rows.forEach(function (a, b) {
+        if (voiceChannelsList.includes(a.channelId)) {
+          count++;
+          out += "\r\n"
+          out += "Le nom de <@" + a.userId + "> sur le chan <#" + a.channelId + "> est `" + unescape(a.nick) + "`";
+        }
+      });
+      message.delete();
+      if (count > 0) {
+        message.channel.send(out);
+      } else {
+        message.channel.send("Aucune correspondance trouvée !");
+
+      }
+    })
+  };
 });
 
 function retrieveUserIdFromMention(mention) {
