@@ -15,11 +15,9 @@ let db = new sqlite3.Database('./db/storedNickDb.db');
 
 bot.on('voiceStateUpdate', (oldMember, newMember) => {
   let newUserChannel = newMember.voiceChannel;
-  //  let oldUserChannel = oldMember.voiceChannel;
   let userId = newMember.user.id;
   let channelId = newMember.voiceChannelID;
   let ownerID = newMember.guild.ownerID
-  console.log(newMember)
   if (newUserChannel !== undefined && userId != ownerID) {
     // User Joins a voice channel
     let sql = "SELECT nick from T_savedNick WHERE userId = " + userId + " AND channelId= " + channelId + ";"
@@ -118,8 +116,6 @@ bot.on("message", message => {
     } else {
       selectAll = "SELECT * from T_savedNick ORDER BY channelId;"
     }
-    //selectAll = "SELECT * from T_savedNick WHERE userId = ? GROUP BY channelId;"
-
     db.all(selectAll, (err, rows) => {
       var out = "Voici la liste des nicks enregistés :"
       var count = 0;
@@ -132,25 +128,27 @@ bot.on("message", message => {
           voiceChannelsList.push(a.id);
         }
       });
-      console.log(rows)
-      rows.forEach(function (a, b) {
+     const pro1 = new Promise((resolve, reject) =>
+     { rows.forEach(function (a, b) {
         if (voiceChannelsList.includes(a.channelId)) {
           count++;
           out += "\r\n"
           out += "Le nom de <@" + a.userId + "> sur le chan <#" + a.channelId + "> est `" + unescape(a.nick) + "`";
         }
       });
+      resolve(out);
+    });
+    pro1.then((value) =>{
       message.delete();
       if (count > 0) {
         message.channel.send(out, {
           split: true}
-        );
-      
-       // message.channel.send(out);
+          );
       } else {
         message.channel.send("Aucune correspondance trouvée !");
-
       }
+    })
+      
     })
   };
 });
