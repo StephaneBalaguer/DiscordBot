@@ -142,7 +142,11 @@ bot.on("message", message => {
       });
       message.delete();
       if (count > 0) {
-        message.channel.send(out);
+        message.channel.send(out, {
+          split: true}
+        );
+      
+       // message.channel.send(out);
       } else {
         message.channel.send("Aucune correspondance trouvée !");
 
