@@ -82,8 +82,7 @@ bot.on("message", message => {
           }
 
         });
-      }
-      else {
+      } else {
         let insertData = [userId, channelId, newNick];
         let insertSql = "INSERT INTO T_savedNick (userId, channelId, nick) values ( ? , ?, ?);"
         db.run(insertSql, insertData, function (err) {
@@ -128,27 +127,30 @@ bot.on("message", message => {
           voiceChannelsList.push(a.id);
         }
       });
-     const pro1 = new Promise((resolve, reject) =>
-     { rows.forEach(function (a, b) {
-        if (voiceChannelsList.includes(a.channelId)) {
-          count++;
-          out += "\r\n"
-          out += "Le nom de <@" + a.userId + "> sur le chan <#" + a.channelId + "> est `" + unescape(a.nick) + "`";
-        }
+      const pro1 = new Promise((resolve, reject) => {
+        rows.forEach(function (a, b) {
+          if (voiceChannelsList.includes(a.channelId)) {
+            count++;
+            out += "\r\n"
+            out += "Le nom de <@" + a.userId + "> sur le chan <#" + a.channelId + "> est `" + unescape(a.nick) + "`";
+          }
+        });
+        resolve(out);
       });
-      resolve(out);
-    });
-    pro1.then((value) =>{
-      message.delete();
-      if (count > 0) {
-        message.channel.send(out, {
-          split: true}
-          );
-      } else {
-        message.channel.send("Aucune correspondance trouvée !");
-      }
-    })
-      
+      pro1.then((value) => {
+        message.delete();
+        if (count > 0) {
+          message.channel.send(out, {
+            split: true
+          });
+        } else {
+          message.channel.send("Aucune correspondance trouvée !");
+        }
+      })
+
+      pro1.catch((value) => {
+        console.log(value);
+      })
     })
   };
 });
@@ -162,4 +164,3 @@ function retrieveUserIdFromMention(mention) {
 }
 console.log("start");
 bot.login(process.env.BOT_TOKEN);
-
