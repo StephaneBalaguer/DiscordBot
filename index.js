@@ -100,8 +100,8 @@ bot.on("message", message => {
   let bbs = message.content.slice(prefix.length).trim().split(' ');
   if (bbs.shift().toLowerCase() == 'sendmessage') {
     var abc = message.content.substring(13, message.content.length);
-    message.delete();
     message.channel.send(abc);
+    message.delete();
   }
 
   let node = message.content.slice(prefix.length).trim().split(' ');
@@ -138,11 +138,11 @@ bot.on("message", message => {
         resolve(out);
       });
       pro1.then((value) => {
-        message.delete();
         if (count > 0) {
           message.channel.send(out, {
             split: true
           });
+        message.delete();
         } else {
           message.channel.send("Aucune correspondance trouvée !");
         }
