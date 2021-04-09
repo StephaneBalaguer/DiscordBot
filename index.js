@@ -23,7 +23,7 @@ bot.on('voiceStateUpdate', (oldMember, newMember) => {
     let sql = "SELECT nick from T_savedNick WHERE userId = " + userId + " AND channelId= " + channelId + ";"
     db.all(sql, [], (err, rows) => {
       if (err) {
-        throw err;
+        return console.log("ERROR "+err.message);
       }
       if (rows.length < 1) {
         return;
@@ -66,7 +66,7 @@ bot.on("message", message => {
     let dataCountSql = [userId, channelId];
     db.all(selectCountSql, dataCountSql, (err, rows) => {
       if (err) {
-        throw err;
+        return console.log("ERROR "+err.message);
       }
       if (rows[0].total == 1) {
 
@@ -75,7 +75,7 @@ bot.on("message", message => {
 
         db.run(updateSql, updateData, function (err) {
           if (err) {
-            return console.log(err.message);
+            return console.log("ERROR "+err.message);
           }
           if (this.changes == 1) {
             message.reply("Le nom de <@" + userId + "> sur le chan <#" + channelId + "> sera maintenant " + unescape(newNick));
@@ -87,7 +87,7 @@ bot.on("message", message => {
         let insertSql = "INSERT INTO T_savedNick (userId, channelId, nick) values ( ? , ?, ?);"
         db.run(insertSql, insertData, function (err) {
           if (err) {
-            return console.log(err.message);
+            return console.log("ERROR "+err.message);
           }
           if (this.changes == 1) {
             message.reply("Le nom de <@" + userId + "> sur le chan <#" + channelId + "> sera maintenant " + unescape(newNick));
@@ -119,7 +119,7 @@ bot.on("message", message => {
       var out = "Voici la liste des nicks enregistés :"
       var count = 0;
       if (err) {
-        throw err;
+        return console.log("ERROR "+err.message);
       }
       let voiceChannelsList = [];
       message.guild.channels.forEach(function (a, b) {
@@ -149,7 +149,7 @@ bot.on("message", message => {
       })
 
       pro1.catch((value) => {
-        console.log(value);
+        //console.log(value);
       })
     })
   };
@@ -162,5 +162,5 @@ function retrieveUserIdFromMention(mention) {
   mention = mention.replace("!", "")
   return mention;
 }
-console.log("start");
+console.log("started");
 bot.login(process.env.BOT_TOKEN);
